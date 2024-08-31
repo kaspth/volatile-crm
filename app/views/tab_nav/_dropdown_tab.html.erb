@@ -1,9 +1,9 @@
-<%= tag.span data: { controller: "toggle", toggle_toggle_class: "hidden" }, class: "relative" do %>
-  <%= tag.button class: ["h-full", tab.classes], data: { action: "click->toggle#toggle click@window->toggle#hide pagehide@window->toggle#hide" } do %>
-    <%= tab.icon %>
-    <%= tab.text %>
-    <%= icons.chevron_down %>
-  <% end %>
+<details class="relative">
+  <summary class="h-full list-none <%= tab.classes %>">
+    <%= tab.icon + tab.text + icons.chevron_down %>
+  </summary>
 
-  <%= tag.div items, class: ["hidden", "z-40 absolute mt-1 w-60 rounded border border-gray-300 shadow-lg py-1 bg-white divide-y divide-gray-200"], data: { toggle_target: "toggleable" } %>
-<% end %>
+  <div class="z-40 absolute mt-1 w-60 rounded border border-gray-300 shadow-lg py-1 bg-white divide-y divide-gray-200">
+    <%= items %>
+  </div>
+</details>
