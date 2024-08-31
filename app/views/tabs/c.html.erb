@@ -17,7 +17,7 @@
     <% end %>
   <% end %>
 
-  <% if current_account.enabled_feature?(:search) %>
+  <% if current_account.features.search? %>
     <% c.with_extra do %>
       <%= form_tag searches_path, method: :get do %>
         <%= text_field_tag :query, "", placeholder: "Search", autocomplete: "off", class: "w-full text-sm border-gray-300 rounded-lg shadow-inner placeholder:text-gray-400" %>

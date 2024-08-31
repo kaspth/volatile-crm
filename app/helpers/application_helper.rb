@@ -1,9 +1,4 @@
 module ApplicationHelper
-  def current_account
-    Account.new(plan: "basic", contacts: 12, companies: 7, tasks: 21, messages: 53, features: [:search])
-  end
-
-  def current_user
-    User.new(admin: true)
-  end
+  def current_account = Current.account
+  def current_user = Current.user
 end
