@@ -15,23 +15,19 @@ class TabNav::Bar < ActionView::Partial
   end
 
   private
-    class Tab < Data.define(:text, :icon, :disabled, :selected)
+    class Tab < Data.define(:text, :icon)
       include ActionView::Element
 
-      alias disabled? disabled
-      alias selected? selected
-      def initialize(text:, icon: nil, disabled: false, selected: false) = super
+      def initialize(text:, icon: nil, **) = super
 
       def partial(key, **) = render("tab_nav/#{key}", tab: self, **)
 
-      def classes
-        class_names(
-          "group whitespace-nowrap flex items-center space-x-1 rounded rounded-b-none leading-none py-3 px-3 border",
-          "border-gray-300 border-b-gray-400 hover:bg-gray-50":  !disabled?,
-          "border-gray-200 border-b-gray-400 cursor-not-allowed": disabled?,
-          "border-b-2 border-b-red-400": selected?
-        )
-      end
+      def classes = class_names(
+        "group whitespace-nowrap flex items-center space-x-1 rounded rounded-b-none leading-none py-3 px-3 border",
+        "border-gray-300 border-b-gray-400 hover:bg-gray-50":   enabled?,
+        "border-gray-200 border-b-gray-400 cursor-not-allowed": disabled?,
+        "border-b-2 border-b-red-400": selected?
+      )
 
       def icon
         super&.then { view.icons.render(_1, disabled:) }
@@ -44,17 +40,12 @@ class TabNav::Bar < ActionView::Partial
 
     class Counter < Data.define(:counter, :threshold)
       def to_s
-        ActionView::Element.tag.span counter, class: ["text-xs leading-none p-1 rounded bg-gray-200 text-gray-600", threshold_classes]
+        ActionView.tag.span counter, class: ["text-xs leading-none p-1 rounded bg-gray-200 text-gray-600", threshold_classes]
       end
 
       private
-        def threshold_classes
-          exceeded? ? "bg-red-200 text-red-600" : "bg-gray-200 text-gray-600"
-        end
-
-        def exceeded?
-          threshold && counter > threshold
-        end
+        def threshold_classes = exceeded? ? "bg-red-200 text-red-600" : "bg-gray-200 text-gray-600"
+        def exceeded? = threshold && counter > threshold
     end
 
     class Dropdown < ActionView::Partial

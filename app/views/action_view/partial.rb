@@ -1,11 +1,30 @@
 $delegate_superclass ||= DelegateClass(ActionView::Base) # Trickery to make reloading work, while hacking on the concept
 
-module ActionView::Element
-  extend self
+module ActionView
+  def self.tag = Element.tag
+end
 
-  attr_writer :view
-  def view = @view || ActionView::Partial.view
-  delegate :render, :capture, :tag, :link_to, :class_names, :token_list, to: :view
+module ActionView::Element
+  module View
+    attr_writer :view
+    def view = @view || ActionView::Partial.view
+    delegate :render, :capture, :tag, :link_to, :class_names, :token_list, to: :view
+  end
+
+  extend View
+  include View
+
+  def enabled = !disabled?
+  alias enabled? enabled
+
+  attr_accessor :disabled, :selected
+  alias disabled? disabled
+  alias selected? selected
+
+  def initialize(disabled: false, selected: false, **)
+    @disabled, @selected = disabled, selected
+    super(**)
+  end
 end
 
 class ActionView::Partial < $delegate_superclass
