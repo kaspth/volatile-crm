@@ -2,16 +2,20 @@ class TabNav::Bar < ActionView::Partial
   slot :extra
   def render(&) = super("tab_nav/bar", tabs: capture(&), extra:)
 
-  def link_tab(text, link, icon:, selected: view.current_page?(link), counter: nil, threshold: nil)
-    Tab.new(text:, icon:, selected:).partial __method__, link:, counter: (Counter.new(counter, threshold) if counter)
+  def link_to(text, link, icon:, selected: view.current_page?(link), count: nil, threshold: nil)
+    Tab.new(text:, icon:, selected:).partial "link_tab", link:, count: (Count.new(count, threshold) if count)
   end
 
-  def disabled_tab(text, icon:, tooltip:)
-    Tab.new(text:, icon:, disabled: true).partial __method__, tooltip:
+  def link_to_if(condition, text, link, icon:, tooltip:)
+    if condition
+      link_to text, link, icon:
+    else
+      Tab.new(text:, icon:, disabled: true).partial "disabled_tab", tooltip:
+    end
   end
 
-  def dropdown_tab(text, icon:, selected: false, &)
-    Tab.new(text:, icon:, selected:).partial __method__, items: Dropdown.capture(&)
+  def dropdown(text, icon:, selected: false, &)
+    Tab.new(text:, icon:, selected:).partial "dropdown_tab", items: Dropdown.capture(&)
   end
 
   private
@@ -38,19 +42,19 @@ class TabNav::Bar < ActionView::Partial
       end
     end
 
-    class Counter < Data.define(:counter, :threshold)
+    class Count < Data.define(:count, :threshold)
       def to_s
-        ActionView.tag.span counter, class: ["text-xs leading-none p-1 rounded bg-gray-200 text-gray-600", threshold_classes]
+        ActionView.tag.span count, class: ["text-xs leading-none p-1 rounded bg-gray-200 text-gray-600", threshold_classes]
       end
 
       private
         def threshold_classes = exceeded? ? "bg-red-200 text-red-600" : "bg-gray-200 text-gray-600"
-        def exceeded? = threshold && counter > threshold
+        def exceeded? = threshold && count > threshold
     end
 
     class Dropdown < ActionView::Partial
-      def item(text, link)
-        link_to text, link, class: "block w-full text-left py-1.5 px-3 text-gray-500 hover:text-gray-600 hover:bg-gray-50"
+      def link_to(text, link)
+        super class: "block w-full text-left py-1.5 px-3 text-gray-500 hover:text-gray-600 hover:bg-gray-50"
       end
     end
 end
